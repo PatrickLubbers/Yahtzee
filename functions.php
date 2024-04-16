@@ -10,7 +10,7 @@
  
 //TODO: build in comparison function. (kind of still needed, if you want to show all scores
 
-//CSS DESIGN
+//CSS DESIGN. Should be in separate css folder, not in a function.
 
 function css_styling() {
     echo '<style>';
@@ -209,7 +209,7 @@ function show_result($stenen) {
 }
 
 //######################
-//This is clearly double and most likely unnecessary. Will refactor
+//This is most likely unnecessary. Will refactor
 //######################
 
 function render_score_form($scores) {
@@ -230,7 +230,7 @@ function render_score_form($scores) {
     echo '</form>';
 }
 
-function calculate_and_check_score($scoresheet, $stenen, $selectedCategory) {
+function calculate_and_check_score($scoresheet, $stenen, $selectedCategory, &$numbersum) {
 	$sum = 0;
 	
 	// Check if the category has already been selected
@@ -239,12 +239,11 @@ function calculate_and_check_score($scoresheet, $stenen, $selectedCategory) {
 		return $scoresheet[$selectedCategory]; //Return the same value thats already in there
     }
 	
-	//checks
-	
 	//Score for specific number
 	foreach ($stenen as $value) {
 		if ($selectedCategory == $value && $scoresheet[$value] === null) {
 			$sum += $value;
+            $numbersum += $value; //updating numbersum
 		}
 	}
 	
@@ -282,6 +281,8 @@ function calculate_and_check_score($scoresheet, $stenen, $selectedCategory) {
 	if ($selectedCategory == 'chance') {
 		$sum += calculate_sum($stenen);
 	}	
+
+    //Score for +35 point bonus
 	
     return $sum;
 }
@@ -394,24 +395,38 @@ function calculate_final_result($scores, $playerNames) {
     // Check if any value in any subarray is still null
     foreach ($scores as $categories) {
         if (in_array(null, $categories, true)) {
-            //If any value is still null in any array within array, the game is not finished
+            // If any value is still null in any array within array, the game is not finished
             return null;
         }
     }
 
-    //If all values are filles (not null), the scores are calculated.
+    // If all values are filled (not null), the scores are calculated.
     $totalScores = [];
+    
     foreach ($scores as $player => $categories) {
-        $totalScores[$player] = array_sum(array_filter($categories, 'is_numeric'));
+        // Initialize the bonus points variable
+        $bonusPoints = 0;
+
+        // Calculate the sum of categories 1 to 6
+        $totalSum = array_sum(array_filter($categories, 'is_numeric'));
+
+        // Check if the sum of categories 1 to 6 exceeds 10
+        if ($totalSum > 62) {
+            // Add 35 bonus points
+            $bonusPoints += 35;
+        }
+
+        // Add the bonus points to the total sum
+        $totalScores[$player] = $totalSum + $bonusPoints;
     }
 
-    //Finding the player with the highest total score based on its index in session scores
+    // Finding the player with the highest total score based on its index in session scores
     $winnerIndex = array_search(max($totalScores), $totalScores);
 
-	//I can return anything, so why not an array.
+    // Return an array with the winner's name, index, and total scores
     return [
-        'winnername' => $playerNames[$winnerIndex -1], 
-		'winner' => $winnerIndex,
+        'winnername' => $playerNames[$winnerIndex - 1], 
+        'winner' => $winnerIndex,
         'totalScores' => $totalScores,
     ];
 }
@@ -419,5 +434,3 @@ function calculate_final_result($scores, $playerNames) {
 //En de scoresheet die in session scores onder dezelfde index opgeslagen staat
 
 //Dat de indexen niet helemaal overeenkomen is wel een beetje ongemakkelijk. TODO: FIX
-
-?>

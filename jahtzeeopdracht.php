@@ -1,5 +1,7 @@
 <?php 
 
+ob_start();//Start output buffering
+
 session_start();
 
 include 'functions.php';
@@ -10,7 +12,8 @@ echo "<h1>Let's play Yahtzee!</h1>";
 if (!isset($_SESSION['stenen'])) {
 echo "Yahtzee. Als je dobbels gooit zie je 5 dobbels met de ogen. <br> Je mag 3 keer gooien.
 <br>Je kunt dobbels vastzetten als je ze wilt houden en niet nog een wilt gooien.
-<br>Na 3 keer kies je een categorie waar je hand aan voldoet. Als het niet aan de voorwaarden voldoet, krijg je 0 punten.<br><br>
+<br>Na 3 keer kies je een categorie waar je hand aan voldoet. Als het niet aan de voorwaarden voldoet, krijg je 0 punten voor de geselecteerde categorie.<br>
+<br>Is de som van je scores in categorie 1 t/m 6 meer dan 63, dan krijg je 35 bonuspunten.<br><br>
 
 1 t/m 6 getallen bij elkaar opgeteld:	<br><br>
 three_of_a_kind: bijvoorbeeld 3-3-3-4-2 <br>
@@ -27,6 +30,11 @@ css_styling();
 //init
 $worp = 1;
 $laatsteworp = 3;
+
+// Initialize $numbersum if it's not already set
+if (!isset($_SESSION['numbersum'])) {
+    $_SESSION['numbersum'] = 0;
+}
 
 if (!isset($_SESSION['stenen'])) {
 	$_SESSION['stenen']	= [];
@@ -60,7 +68,7 @@ if (!isset($_SESSION['scores'])) {
             'small straight' => null,
             'large straight' => null,
             'yahtzee' => null,
-            'chance' => null,
+            'chance' => null
         ];
     }
 }
@@ -92,10 +100,8 @@ if(isset($_POST['dobbelen']) ) {
 // Handle form submission. 
 if (isset($_POST['score_submit'])) {
     $selectedCategory = $_POST['score_category'];
-	
 	//Takes the sum of the dice values before resetting the session array $stenen
-    $sum = calculate_and_check_score($_SESSION['scores'][$_SESSION['current_player']], $_SESSION['stenen'], $selectedCategory);
-
+    $sum = calculate_and_check_score($_SESSION['scores'][$_SESSION['current_player']], $_SESSION['stenen'], $selectedCategory, $_SESSION['numbersum']);
 	//Updating the scores array based on the selected category
     $currentPlayer = 1; 
     $_SESSION['scores'][$_SESSION['current_player']][$selectedCategory] = $sum;
