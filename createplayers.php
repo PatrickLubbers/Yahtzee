@@ -1,9 +1,11 @@
 <?php
-session_start(); // Start the session
+ob_start();//Start output buffering
+
+session_start(); //Start the session
 
 include 'functions.php';
 
-//Grab the css styling by wrapping everything in a div class container
+//Grabbing the css styling by wrapping everything in a div class container
 echo '<div class="container">';
 echo "<h1>Let's play Yahtzee!</h1>";
 
@@ -12,10 +14,13 @@ css_styling();
 if (!isset($_SESSION['player_names'])) {
 	//Session player names created
     $_SESSION['player_names'] = [];
-}
+} 
 
 if (isset($_POST['addPlayer'])) {
-    //Add an extra space in the session
+    if (isset($_POST['player_names'])) {
+        $_SESSION['player_names'] = $_POST['player_names'];
+    }
+    //Adds an extra space in the session
     $_SESSION['player_names'][] = '';
 }
 
@@ -23,9 +28,9 @@ if (isset($_POST['submit'])) {
     //Store the submitted player names in the session array
     $_SESSION['player_names'] = $_POST['player_names'];
 	
-	// Redirect to jahtzeeopdracht.php
+	//Redirect to jahtzeeopdracht.php
     header("Location: jahtzeeopdracht.php");
-    exit(); //Ensure that no further code is executed after the header redirect
+    exit(); //Ensures that no further code is executed after the header redirect
 }
 
 //Generate buttons 
@@ -71,5 +76,3 @@ display_reset();
 echo '</div>'; //Closes container, which derives its styling from css_styling();
 
 //session_destroy();
-
-?>
