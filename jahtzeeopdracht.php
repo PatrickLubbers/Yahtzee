@@ -135,7 +135,7 @@ display_reset();
 $result = calculate_final_result($_SESSION['scores'], $_SESSION['player_names']);
 
 if ($result !== null) {
-    echo "The winner is {$result['winnername']} with a total score of {$result['totalScores'][$result['winner']]}!";
+    echo "The winner is {$result['winnername']} with a 1/6 bonus of: {$result['bonusPoints']} a total score of {$result['totalScores'][$result['winner']]}!";
 } else {
     echo "The game is not finished yet.";
 }

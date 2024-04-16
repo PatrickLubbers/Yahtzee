@@ -428,6 +428,7 @@ function calculate_final_result($scores, $playerNames) {
         'winnername' => $playerNames[$winnerIndex - 1], 
         'winner' => $winnerIndex,
         'totalScores' => $totalScores,
+        'bonusPoints' => $bonusPoints
     ];
 }
 //Via de index benaderen we de naam van de speler wiens index in session player_names hetzelfde is -1
