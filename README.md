@@ -12,4 +12,5 @@ Possible additional challenges:
 - Add some interactive elements with javascript
 - Add database connection to save high scores (and showing current high scores)
 - Rewrite in an object oriented style (using Laravel or Symfony framework)
+- Write test suite
 
